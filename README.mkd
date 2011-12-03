@@ -1,0 +1,24 @@
+Introduction
+============
+This is a Java library that generates sets of data that may be used to test various algorithms, such as clustering and multi-dimensional scaling algorithms. 
+
+Downloads
+=========
+The library can be downloaded as a binary or source package from [https://github.com/gemstonetiger/trickl-dataset/downloads](https://github.com/gemstonetiger/trickl-dataset/downloads "Distribution download page").
+
+The source can be also retrieved straight from the Git repository: `git clone git@github.com:gemstonetiger/trickl-dataset.git`.
+
+Features
+========
+Inclined Plane - A set of 3D points in that form a 2D plane with a specified deviation from that plane. Useful to MDS algorithms, such as PCA.
+Swiss Roll - A set of 3D points that define the surface of a swiss roll. Useful for advanced MDS algorithms, such as Isomap.
+Spiral Flower - A set of 2D points that look like the petals of a flower, where the petals spiral outward. Useful for advanced clustering algorithms.
+Gaussian Circles - A set of 2D points where each point nominally belongs to a circle and the distribution of distance from the centre of that circle to the point is gaussian. Useful for simple clustering algorithms.
+
+Requirements
+------------
+Requires the trickl-matrix library as all datasets are produced in matrix form. Currently, requires the Colt matrix library. In future, it is hoped that the trickl-matrix library will allow this library to be decoupled from any particular matrix implementation.
+
+License and conditions of use
+=============================
+The program is available under GNU General Public License (see file `license-gpl.txt` in the distribution package for the text of the license).
