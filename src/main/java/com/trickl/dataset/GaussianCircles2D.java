@@ -22,16 +22,17 @@ package com.trickl.dataset;
 
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
-import cern.jet.random.engine.RandomEngine;
 import cern.jet.random.Normal;
-import cern.jet.random.Uniform;
-import cern.jet.random.engine.MersenneTwister;
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.random.RandomGenerator;
 
 import java.awt.Rectangle;
+import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.distribution.UniformRealDistribution;
 
 public class GaussianCircles2D implements DataSetGenerator {
 
-   private RandomEngine randomEngine;
+   private RandomGenerator randomGenerator;
 
    private Rectangle prototypeBounds;
 
@@ -41,7 +42,7 @@ public class GaussianCircles2D implements DataSetGenerator {
 
    public GaussianCircles2D()
    {
-      this.randomEngine = new MersenneTwister();
+      this.randomGenerator = new MersenneTwister();
       this.prototypeBounds = new Rectangle(-1, -1, 2, 2);
    }
 
@@ -51,24 +52,23 @@ public class GaussianCircles2D implements DataSetGenerator {
       DoubleMatrix2D data = new DenseDoubleMatrix2D(n, 2);
 
       DoubleMatrix2D prototypes = new DenseDoubleMatrix2D(clusters, 2);
-      Uniform xDistribution = new Uniform(prototypeBounds.x, prototypeBounds.x + prototypeBounds.width, randomEngine);
-      Uniform yDistribution = new Uniform(prototypeBounds.y, prototypeBounds.y + prototypeBounds.height, randomEngine);
+      UniformRealDistribution xDistribution = new UniformRealDistribution(randomGenerator, prototypeBounds.x, prototypeBounds.x + prototypeBounds.width);
+      UniformRealDistribution yDistribution = new UniformRealDistribution(randomGenerator, prototypeBounds.y, prototypeBounds.y + prototypeBounds.height);
       for (int i = 0; i < clusters; i++) {
-         double x = xDistribution.nextDouble();
-         double y = yDistribution.nextDouble();
+         double x = xDistribution.sample();
+         double y = yDistribution.sample();
          prototypes.setQuick(i, 0, x);
          prototypes.setQuick(i, 1, y);
       }
 
-      Normal radialDistribution = new Normal(0., radiusStd, randomEngine);
-      Uniform angleDistribution = new Uniform(0, 2 * Math.PI, randomEngine);
-      Uniform clusterDistribution = new Uniform(randomEngine);
+      NormalDistribution radialDistribution = new NormalDistribution(randomGenerator, 0., radiusStd);
+      UniformRealDistribution angleDistribution = new UniformRealDistribution(randomGenerator, 0, 2 * Math.PI);
 
       for (int i = 0; i < data.rows(); i++) {
          // Choose a cluster randomly
-         int j = clusterDistribution.nextIntFromTo(0, clusters - 1);
-         double radius = radialDistribution.nextDouble();
-         double angle = angleDistribution.nextDouble();
+         int j = randomGenerator.nextInt(clusters);
+         double radius = radialDistribution.sample();
+         double angle = angleDistribution.sample();
 
          data.setQuick(i, 0, prototypes.getQuick(j, 0) + radius * Math.cos(angle));
          data.setQuick(i, 1, prototypes.getQuick(j, 1) + radius * Math.sin(angle));
@@ -77,12 +77,12 @@ public class GaussianCircles2D implements DataSetGenerator {
       return data;
    }
 
-   public RandomEngine getRandomEngine() {
-      return randomEngine;
+   public RandomGenerator getRandomGenerator() {
+      return randomGenerator;
    }
 
-   public void setRandomEngine(RandomEngine randomEngine) {
-      this.randomEngine = randomEngine;
+   public void setRandomGenerator(RandomGenerator randomGenerator) {
+      this.randomGenerator = randomGenerator;
    }
 
    public Rectangle getPrototypeBounds() {

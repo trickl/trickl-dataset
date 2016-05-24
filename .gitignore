@@ -1,1 +1,3 @@
 /target/
+.flattened-pom.xml
+**/*.dat

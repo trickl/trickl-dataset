@@ -25,14 +25,14 @@ import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.jet.math.Functions;
-import cern.jet.random.engine.RandomEngine;
-import cern.jet.random.Normal;
-import cern.jet.random.Uniform;
-import cern.jet.random.engine.MersenneTwister;
+import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.distribution.UniformRealDistribution;
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.random.RandomGenerator;
 
 public class SwissRoll3D implements DataSetGenerator {
    
-   private RandomEngine randomEngine;
+   private RandomGenerator randomGenerator;
 
    private DoubleMatrix1D normal;
    
@@ -48,7 +48,7 @@ public class SwissRoll3D implements DataSetGenerator {
 
    public SwissRoll3D()
    {
-      this.randomEngine = new MersenneTwister();
+      this.randomGenerator = new MersenneTwister();
       this.normal = new DenseDoubleMatrix1D(new double[] {0, 0, 1});
    }
 
@@ -59,19 +59,19 @@ public class SwissRoll3D implements DataSetGenerator {
       DoubleMatrix2D untransformedData = data.like(data.rows(), data.columns());
 
       // Planar random uniform distribution in 2D.
-      Normal noiseDistribution = new Normal(0., noiseStd, randomEngine);
-      Uniform depthDistribution = new Uniform(-getDepth() / 2, + getDepth() / 2, randomEngine);
+      NormalDistribution noiseDistribution = new NormalDistribution(randomGenerator, 0., noiseStd);
+      UniformRealDistribution depthDistribution = new UniformRealDistribution(randomGenerator, -getDepth() / 2, + getDepth() / 2);
 
       for (int i = 0; i < untransformedData.rows(); i++)
       {
          double l = ((double) i) / ((double) untransformedData.rows());
          double angle = 2.0 * Math.PI * getRevolutions() * l;
-         double r = (getRadius() + noiseDistribution.nextDouble()) * Math.exp(-l * getDecay() * getRevolutions());
+         double r = (getRadius() + noiseDistribution.sample()) * Math.exp(-l * getDecay() * getRevolutions());
 
 
          untransformedData.setQuick(i, 0, r * Math.cos(angle));
          untransformedData.setQuick(i, 1, r * Math.sin(angle));
-         untransformedData.setQuick(i, 2, getDepth() * depthDistribution.nextDouble());
+         untransformedData.setQuick(i, 2, getDepth() * depthDistribution.sample());
       }
 
       // Normalise normal
@@ -119,12 +119,12 @@ public class SwissRoll3D implements DataSetGenerator {
       return data;
    }
 
-   public RandomEngine getRandomEngine() {
-      return randomEngine;
+   public RandomGenerator getRandomGenerator() {
+      return randomGenerator;
    }
 
-   public void setRandomEngine(RandomEngine randomEngine) {
-      this.randomEngine = randomEngine;
+   public void setRandomGenerator(RandomGenerator randomGenerator) {
+      this.randomGenerator = randomGenerator;
    }
 
    public DoubleMatrix1D getNormal() {

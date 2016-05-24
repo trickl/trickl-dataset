@@ -22,13 +22,13 @@ package com.trickl.dataset;
 
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
-import cern.jet.random.engine.RandomEngine;
-import cern.jet.random.Normal;
-import cern.jet.random.engine.MersenneTwister;
+import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.random.RandomGenerator;
 
 public class SpiralFlower2D implements DataSetGenerator {
 
-   private RandomEngine randomEngine;
+   private RandomGenerator randomGenerator;
 
    private double noiseStd = 0.05;
 
@@ -40,7 +40,7 @@ public class SpiralFlower2D implements DataSetGenerator {
 
    public SpiralFlower2D()
    {
-      this.randomEngine = new MersenneTwister();
+      this.randomGenerator = new MersenneTwister();
    }
 
    // Gaussian circular 2D distribution, with random cluster centres and std dev
@@ -48,7 +48,7 @@ public class SpiralFlower2D implements DataSetGenerator {
    public DoubleMatrix2D generate(int n) {
       DoubleMatrix2D data = new DenseDoubleMatrix2D(n, 2);
      
-      Normal noiseDistribution = new Normal(0., noiseStd, randomEngine);
+      NormalDistribution noiseDistribution = new NormalDistribution(randomGenerator, 0., noiseStd);
 
       for (int i = 0; i < data.rows(); i++) {
          int arm = i % arms;
@@ -58,19 +58,19 @@ public class SpiralFlower2D implements DataSetGenerator {
 
          double r = radius * (double) i / (double) data.rows();
 
-         data.setQuick(i, 0, r * Math.cos(angle) + noiseDistribution.nextDouble());
-         data.setQuick(i, 1, r * Math.sin(angle) + noiseDistribution.nextDouble());
+         data.setQuick(i, 0, r * Math.cos(angle) + noiseDistribution.sample());
+         data.setQuick(i, 1, r * Math.sin(angle) + noiseDistribution.sample());
       }
 
       return data;
    }
 
-   public RandomEngine getRandomEngine() {
-      return randomEngine;
+   public RandomGenerator getRandomGenerator() {
+      return randomGenerator;
    }
 
-   public void setRandomEngine(RandomEngine randomEngine) {
-      this.randomEngine = randomEngine;
+   public void setRandomGenerator(RandomGenerator randomGenerator) {
+      this.randomGenerator = randomGenerator;
    }
 
    public double getRadiusStd() {

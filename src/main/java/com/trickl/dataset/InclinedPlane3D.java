@@ -25,16 +25,17 @@ import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.jet.math.Functions;
-import cern.jet.random.engine.RandomEngine;
-import cern.jet.random.Normal;
-import cern.jet.random.Uniform;
-import cern.jet.random.engine.MersenneTwister;
+
+import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.distribution.UniformRealDistribution;
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.random.RandomGenerator;
 
 import java.awt.Rectangle;
 
 public class InclinedPlane3D implements DataSetGenerator {
    
-   private RandomEngine randomEngine;
+   private RandomGenerator randomGenerator;
 
    private DoubleMatrix1D normal;
 
@@ -44,7 +45,7 @@ public class InclinedPlane3D implements DataSetGenerator {
 
    public InclinedPlane3D()
    {
-      this.randomEngine = new MersenneTwister();
+      this.randomGenerator = new MersenneTwister();
       this.normal = new DenseDoubleMatrix1D(new double[] {0, 0, 1});
       this.bounds = new Rectangle(-1, -1, 2, 2);
    }
@@ -56,15 +57,15 @@ public class InclinedPlane3D implements DataSetGenerator {
       DoubleMatrix2D untransformedData = data.like(data.rows(), data.columns());
 
       // Planar random uniform distribution in 2D.
-      Normal noiseDistribution = new Normal(0., noiseStd, randomEngine);
-      Uniform xDistribution = new Uniform(bounds.x, bounds.x + bounds.width, randomEngine);
-      Uniform yDistribution = new Uniform(bounds.y, bounds.y + bounds.height, randomEngine);
+      NormalDistribution noiseDistribution = new NormalDistribution(randomGenerator, 0., noiseStd);
+      UniformRealDistribution xDistribution = new UniformRealDistribution(randomGenerator, bounds.x, bounds.x + bounds.width);
+      UniformRealDistribution yDistribution = new UniformRealDistribution(randomGenerator, bounds.y, bounds.y + bounds.height);
 
       for (int i = 0; i < untransformedData.rows(); i++)
       {
-         untransformedData.setQuick(i, 0, xDistribution.nextDouble());
-         untransformedData.setQuick(i, 1, yDistribution.nextDouble());
-         untransformedData.setQuick(i, 2, noiseDistribution.nextDouble());
+         untransformedData.setQuick(i, 0, xDistribution.sample());
+         untransformedData.setQuick(i, 1, yDistribution.sample());
+         untransformedData.setQuick(i, 2, noiseDistribution.sample());
       }
 
       // Normalise normal
@@ -112,12 +113,12 @@ public class InclinedPlane3D implements DataSetGenerator {
       return data;
    }
 
-   public RandomEngine getRandomEngine() {
-      return randomEngine;
+   public RandomGenerator getRandomGenerator() {
+      return randomGenerator;
    }
 
-   public void setRandomEngine(RandomEngine randomEngine) {
-      this.randomEngine = randomEngine;
+   public void setRandomGenerator(RandomGenerator randomGenerator) {
+      this.randomGenerator = randomGenerator;
    }
 
    public DoubleMatrix1D getNormal() {
