@@ -32,6 +32,8 @@ import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomGenerator;
 
 import java.awt.Rectangle;
+import org.apache.commons.math3.distribution.ConstantRealDistribution;
+import org.apache.commons.math3.distribution.RealDistribution;
 
 public class InclinedPlane3D implements DataSetGenerator {
    
@@ -57,9 +59,9 @@ public class InclinedPlane3D implements DataSetGenerator {
       DoubleMatrix2D untransformedData = data.like(data.rows(), data.columns());
 
       // Planar random uniform distribution in 2D.
-      NormalDistribution noiseDistribution = new NormalDistribution(randomGenerator, 0., noiseStd);
-      UniformRealDistribution xDistribution = new UniformRealDistribution(randomGenerator, bounds.x, bounds.x + bounds.width);
-      UniformRealDistribution yDistribution = new UniformRealDistribution(randomGenerator, bounds.y, bounds.y + bounds.height);
+      RealDistribution noiseDistribution = noiseStd > 0 ? new NormalDistribution(randomGenerator, 0., noiseStd) : new ConstantRealDistribution(0);
+      RealDistribution xDistribution = new UniformRealDistribution(randomGenerator, bounds.x, bounds.x + bounds.width);
+      RealDistribution yDistribution = new UniformRealDistribution(randomGenerator, bounds.y, bounds.y + bounds.height);
 
       for (int i = 0; i < untransformedData.rows(); i++)
       {

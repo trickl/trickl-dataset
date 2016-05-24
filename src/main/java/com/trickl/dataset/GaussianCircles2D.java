@@ -28,6 +28,7 @@ import org.apache.commons.math3.random.RandomGenerator;
 
 import java.awt.Rectangle;
 import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.distribution.RealDistribution;
 import org.apache.commons.math3.distribution.UniformRealDistribution;
 
 public class GaussianCircles2D implements DataSetGenerator {
@@ -61,8 +62,8 @@ public class GaussianCircles2D implements DataSetGenerator {
          prototypes.setQuick(i, 1, y);
       }
 
-      NormalDistribution radialDistribution = new NormalDistribution(randomGenerator, 0., radiusStd);
-      UniformRealDistribution angleDistribution = new UniformRealDistribution(randomGenerator, 0, 2 * Math.PI);
+      RealDistribution radialDistribution = new NormalDistribution(randomGenerator, 0., radiusStd);
+      RealDistribution angleDistribution = new UniformRealDistribution(randomGenerator, 0, 2 * Math.PI);
 
       for (int i = 0; i < data.rows(); i++) {
          // Choose a cluster randomly

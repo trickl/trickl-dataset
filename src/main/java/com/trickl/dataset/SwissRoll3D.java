@@ -25,7 +25,9 @@ import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.jet.math.Functions;
+import org.apache.commons.math3.distribution.ConstantRealDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.distribution.RealDistribution;
 import org.apache.commons.math3.distribution.UniformRealDistribution;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomGenerator;
@@ -59,8 +61,8 @@ public class SwissRoll3D implements DataSetGenerator {
       DoubleMatrix2D untransformedData = data.like(data.rows(), data.columns());
 
       // Planar random uniform distribution in 2D.
-      NormalDistribution noiseDistribution = new NormalDistribution(randomGenerator, 0., noiseStd);
-      UniformRealDistribution depthDistribution = new UniformRealDistribution(randomGenerator, -getDepth() / 2, + getDepth() / 2);
+      RealDistribution noiseDistribution = noiseStd > 0 ? new NormalDistribution(randomGenerator, 0., noiseStd) : new ConstantRealDistribution(0);
+      RealDistribution depthDistribution = new UniformRealDistribution(randomGenerator, -getDepth() / 2, + getDepth() / 2);
 
       for (int i = 0; i < untransformedData.rows(); i++)
       {

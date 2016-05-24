@@ -22,7 +22,9 @@ package com.trickl.dataset;
 
 import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.DenseDoubleMatrix2D;
+import org.apache.commons.math3.distribution.ConstantRealDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.distribution.RealDistribution;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomGenerator;
 
@@ -48,7 +50,7 @@ public class SpiralFlower2D implements DataSetGenerator {
    public DoubleMatrix2D generate(int n) {
       DoubleMatrix2D data = new DenseDoubleMatrix2D(n, 2);
      
-      NormalDistribution noiseDistribution = new NormalDistribution(randomGenerator, 0., noiseStd);
+      RealDistribution noiseDistribution = noiseStd > 0 ? new NormalDistribution(randomGenerator, 0., noiseStd) : new ConstantRealDistribution(0);
 
       for (int i = 0; i < data.rows(); i++) {
          int arm = i % arms;
